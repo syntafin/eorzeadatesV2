@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from "vue";
+import {computed, reactive, ref, watch} from "vue";
 
 function shuffle<T>(arr: T[]): T[] {
     for (let i = arr.length - 1; i > 0; i--) {
@@ -273,8 +273,7 @@ async function onSubmit() {
         const fileInput = document.getElementById('image-input') as HTMLInputElement | null;
         if (fileInput) fileInput.value = '';
     } catch (e: any) {
-        const msg = e?.data?.message || e?.message || 'Unknown error while validating your request.';
-        errors.image = msg;
+        errors.image = e?.data?.message || e?.message || 'Unknown error while validating your request.';
     } finally {
         submitting.value = false;
     }
