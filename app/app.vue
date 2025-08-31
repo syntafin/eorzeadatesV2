@@ -298,10 +298,10 @@ watch(modalOpen, (open) => {
             <div class="absolute inset-0 size-screen flex justify-around items-center flex-col">
                 <div></div>
                 <div class="flex flex-col items-center justify-center gap-4 bg-black/50 px-12 py-4 rounded-lg">
-                    <h1 class="bg-clip-text bg-gradient-to-r from-fuchsia-400 text-transparent via-pink-400 to-red-500 text-7xl font-black gradient-animate">
+                    <h1 class="bg-clip-text bg-gradient-to-r from-fuchsia-400 text-transparent via-pink-400 to-red-500 text-5xl sm:text-7xl font-black gradient-animate">
                         EorzeaDates
                     </h1>
-                    <p class="text-white text-xl">
+                    <p class="text-white text-sm sm:text-xl">
                         The only dating plattform you ever need, kupo!
                     </p>
                 </div>
