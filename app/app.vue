@@ -3,18 +3,7 @@ const classes = computed(() => {
     return {
         'bg-black': true,
     }
-})
-
-const baseItems = [
-    'backgroundImages/bg01.jpg',
-    'backgroundImages/bg02.jpg',
-    'backgroundImages/bg03.jpg',
-    'backgroundImages/bg04.jpg',
-    'backgroundImages/bg05.jpg',
-    'backgroundImages/bg06.png',
-    'backgroundImages/bg07.png',
-    'backgroundImages/bg08.png',
-];
+});
 
 function shuffle<T>(arr: T[]): T[] {
     for (let i = arr.length - 1; i > 0; i--) {
@@ -24,13 +13,16 @@ function shuffle<T>(arr: T[]): T[] {
     return arr
 }
 
-const shuffledItems = useState<string[]>('carousel-items', () => shuffle([...baseItems]));
+const { data: items } = await useAsyncData('carousel-items', async () => {
+    const files = await $fetch<string[]>('/api/background-images');
+    return shuffle([...files]);
+})
 </script>
 
 <template>
     <UApp>
         <div class="relative size-screen overflow-hidden" :class="classes">
-            <UCarousel v-slot="{item }" :items="shuffledItems" class="relative size-screen overflow-hidden z-0" fade :autoplay="{ delay: 12000 }">
+            <UCarousel v-slot="{ item }" :items="items ?? []" class="relative size-screen overflow-hidden z-0" fade :autoplay="{ delay: 12000 }">
                 <img :src="item" class="w-full h-screen object-cover" alt="Background Image Rotation" />
             </UCarousel>
             <div class="absolute inset-0 bg-fuchsia-500/25 backdrop-blur-xs"></div>
