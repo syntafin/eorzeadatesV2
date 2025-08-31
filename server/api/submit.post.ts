@@ -1,7 +1,8 @@
 import { defineEventHandler, readMultipartFormData, createError } from 'h3'
 
 export default defineEventHandler(async (event) => {
-  const webhookUrl = process.env.DISCORD_WEBHOOK_URL
+  const { discordWebhookUrl } = useRuntimeConfig(event);
+  const webhookUrl = discordWebhookUrl || process.env.DISCORD_WEBHOOK_URL
   if (!webhookUrl) {
     throw createError({
       statusCode: 500,

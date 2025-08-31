@@ -12,5 +12,8 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico'}
       ]
     }
+  },
+  runtimeConfig: {
+    discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL
   }
 })
