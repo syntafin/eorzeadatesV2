@@ -280,11 +280,30 @@ async function onSubmit() {
 }
 
 const modalOpen = ref(false);
+const imagesModal = ref(false);
 
 watch(modalOpen, (open) => {
     if (!open) resetForm();
 });
 
+const carousel = useTemplateRef('carousel')
+const activeIndex = ref(0)
+
+function onClickPrev() {
+    activeIndex.value--
+}
+function onClickNext() {
+    activeIndex.value++
+}
+function onSelect(index: number) {
+    activeIndex.value = index
+}
+
+function select(index: number) {
+    activeIndex.value = index
+
+    carousel.value?.emblaApi?.scrollTo(index)
+}
 </script>
 
 <template>
@@ -304,85 +323,122 @@ watch(modalOpen, (open) => {
                         The only dating plattform you ever need, kupo!
                     </p>
                 </div>
-                <UModal title="Submit new Image" v-model="modalOpen" @update:open="(v)=>{ modalOpen = v; if (!v) resetForm(); }" :close="{ color: 'primary', variant: 'outline', class: 'rounded-full'}" :dismissible="false">
-                    <UButton label="Submit new Image" color="primary" variant="solid" />
+                <div class="flex gap-2">
+                    <!-- Submit Modal -->
+                    <UModal title="Submit new Image" v-model="modalOpen" @update:open="(v)=>{ modalOpen = v; if (!v) resetForm(); }" :close="{ color: 'primary', variant: 'outline', class: 'rounded-full'}" :dismissible="false">
+                        <UButton label="Submit new Image" color="primary" variant="solid" />
 
-                    <template #body>
-                        <div class="p-4">
-                            <p class="text-xs text-gray-300 mb-4">
-                                Fill out this form or submit your request directly via <a href="#" @click.prevent="openDiscordInvite" class="text-primary underline">Discord</a> in the channel <UKbd class="inline-flex gap-x-1 items-center"><UIcon name="i-lucide-message-circle" class="size-3" />submit-request</UKbd>.
-                            </p>
-                            <form @submit.prevent="onSubmit" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-white mb-1" for="name">Name<span class="text-red-400">*</span></label>
-                                    <UInput id="name" v-model="form.name" placeholder="Your Name" class="w-full" />
-                                    <p v-if="errors.name" class="text-red-400 text-sm mt-1">{{ errors.name }}</p>
-                                </div>
-
-                                <div class="flex gap-2">
-                                    <div class="w-full sm:w-1/2">
-                                        <label class="block text-sm font-medium text-white mb-1" for="datacenter">Datacenter <span class="text-xs text-gray-400">optional</span></label>
-                                        <USelectMenu
-                                                id="datacenter"
-                                                v-model="form.datacenter"
-                                                :items="datacenterOptions"
-                                                option-attribute="label"
-                                                value-attribute="value"
-                                                by="value"
-                                                placeholder="Select Datacenter"
-                                                searchable
-                                                searchable-placeholder="Search for Datacenter…"
-                                                clearable
-                                                class="w-full"
-                                                :ui="{ trigger: 'h-10 py-2 px-3', placeholder: 'text-gray-400' }"
-                                                :loading="realmsPending"
-                                                :disabled="!!realmsError"
-                                                @update:model-value="v => form.datacenter = v || null"
-                                        />
-
-                                        <p v-if="errors.datacenter" class="text-red-400 text-sm mt-1">{{ errors.datacenter }}</p>
-                                    </div>
-                                    <div class="w-full sm:w-1/2">
-                                        <label class="block text-sm font-medium text-white mb-1" for="world">World <span class="text-xs text-gray-400">optional</span></label>
-                                        <USelectMenu
-                                                id="world"
-                                                v-model="form.world"
-                                                :items="filteredWorldOptions"
-                                                option-attribute="label"
-                                                value-attribute="value"
-                                                by="value"
-                                                placeholder="Select World"
-                                                searchable
-                                                searchable-placeholder="Search for a World…"
-                                                clearable
-                                                class="w-full"
-                                                :ui="{ trigger: 'h-10 py-2 px-3', placeholder: 'text-gray-400' }"
-                                                :loading="realmsPending"
-                                                :disabled="!!realmsError || !filteredWorldOptions.length"
-                                                @update:model-value="v => form.world = v || null"
-                                        />
-
-                                        <p v-if="errors.world" class="text-red-400 text-sm mt-1">{{ errors.world }}</p>
+                        <template #body>
+                            <div class="p-4">
+                                <p class="text-xs text-gray-300 mb-4">
+                                    Fill out this form or submit your request directly via <a href="#" @click.prevent="openDiscordInvite" class="text-primary underline">Discord</a> in the channel <UKbd class="inline-flex gap-x-1 items-center"><UIcon name="i-lucide-message-circle" class="size-3" />submit-request</UKbd>.
+                                </p>
+                                <form @submit.prevent="onSubmit" class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-white mb-1" for="name">Name<span class="text-red-400">*</span></label>
+                                        <UInput id="name" v-model="form.name" placeholder="Your Name" class="w-full" />
+                                        <p v-if="errors.name" class="text-red-400 text-sm mt-1">{{ errors.name }}</p>
                                     </div>
 
-                                </div>
+                                    <div class="flex gap-2">
+                                        <div class="w-full sm:w-1/2">
+                                            <label class="block text-sm font-medium text-white mb-1" for="datacenter">Datacenter <span class="text-xs text-gray-400">optional</span></label>
+                                            <USelectMenu
+                                                    id="datacenter"
+                                                    v-model="form.datacenter"
+                                                    :items="datacenterOptions"
+                                                    option-attribute="label"
+                                                    value-attribute="value"
+                                                    by="value"
+                                                    placeholder="Select Datacenter"
+                                                    searchable
+                                                    searchable-placeholder="Search for Datacenter…"
+                                                    clearable
+                                                    class="w-full"
+                                                    :ui="{ trigger: 'h-10 py-2 px-3', placeholder: 'text-gray-400' }"
+                                                    :loading="realmsPending"
+                                                    :disabled="!!realmsError"
+                                                    @update:model-value="v => form.datacenter = v || null"
+                                            />
 
-                                <div>
-                                    <label class="block text-sm font-medium text-white mb-1" for="image-input">Image<span class="text-red-400">*</span></label>
-                                    <UInput class="w-full" id="image-input" type="file" accept="image/png,image/jpeg,image/webp"
-                                            @change="(e:any)=>{ const f=e?.target?.files?.[0]; form.image=f||null; }" />
-                                    <p class="text-xs text-gray-300 mt-1">Allowed: PNG, JPEG/JPG, WebP. Max. 8 MB.</p>
-                                    <p v-if="errors.image" class="text-red-400 text-sm mt-1">{{ errors.image }}</p>
-                                </div>
+                                            <p v-if="errors.datacenter" class="text-red-400 text-sm mt-1">{{ errors.datacenter }}</p>
+                                        </div>
+                                        <div class="w-full sm:w-1/2">
+                                            <label class="block text-sm font-medium text-white mb-1" for="world">World <span class="text-xs text-gray-400">optional</span></label>
+                                            <USelectMenu
+                                                    id="world"
+                                                    v-model="form.world"
+                                                    :items="filteredWorldOptions"
+                                                    option-attribute="label"
+                                                    value-attribute="value"
+                                                    by="value"
+                                                    placeholder="Select World"
+                                                    searchable
+                                                    searchable-placeholder="Search for a World…"
+                                                    clearable
+                                                    class="w-full"
+                                                    :ui="{ trigger: 'h-10 py-2 px-3', placeholder: 'text-gray-400' }"
+                                                    :loading="realmsPending"
+                                                    :disabled="!!realmsError || !filteredWorldOptions.length"
+                                                    @update:model-value="v => form.world = v || null"
+                                            />
 
-                                <div class="flex items-center justify-end gap-2">
-                                    <span v-if="successMessage" class="text-green-400 text-sm">{{ successMessage }}</span>
-                                    <UButton type="submit" color="primary" :loading="submitting">Submit</UButton>
+                                            <p v-if="errors.world" class="text-red-400 text-sm mt-1">{{ errors.world }}</p>
+                                        </div>
+
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-white mb-1" for="image-input">Image<span class="text-red-400">*</span></label>
+                                        <UInput class="w-full" id="image-input" type="file" accept="image/png,image/jpeg,image/webp"
+                                                @change="(e:any)=>{ const f=e?.target?.files?.[0]; form.image=f||null; }" />
+                                        <p class="text-xs text-gray-300 mt-1">Allowed: PNG, JPEG/JPG, WebP. Max. 8 MB.</p>
+                                        <p v-if="errors.image" class="text-red-400 text-sm mt-1">{{ errors.image }}</p>
+                                    </div>
+
+                                    <div class="flex items-center justify-end gap-2">
+                                        <span v-if="successMessage" class="text-green-400 text-sm">{{ successMessage }}</span>
+                                        <UButton type="submit" color="primary" :loading="submitting">Submit</UButton>
+                                    </div>
+                                </form>
+                            </div>
+                        </template>
+                    </UModal>
+                    <!-- Show Images Modal -->
+                    <UModal title="Show Images" fullscreen v-model="imagesModal" :close="{ color: 'primary', variant: 'outline', class: 'rounded-full'}" :dismissible="false">
+                        <UButton label="Show Images" color="secondary" variant="solid" />
+
+                        <template #body>
+                            <div class="flex flex-col items-center justify-center">
+                                <UCarousel
+                                    ref="carousel"
+                                    v-slot="{ item }"
+                                    arrows
+                                    :items="items"
+                                    :prev="{ onClick: onClickPrev }"
+                                    :next="{ onClick: onClickNext }"
+                                    class="w-[80%] h-auto"
+                                    @select="onSelect"
+                                >
+                                    <img :src="item" class="w-full h-auto object-cover" alt="Image Rotation" />
+                                </UCarousel>
+                                <div class="absolute bottom-0">
+                                    <div class="flex gap-1 justify-between mx-auto">
+                                        <div
+                                            v-for="(item, index) in items"
+                                            :key="index"
+                                            class="size-24 opacity-25 hover:opacity-100 transition-opacity"
+                                            :class="{ 'opacity-100': activeIndex === index }"
+                                            @click="select(index)"
+                                        >
+                                            <img :src="item" width="88" height="50" class="rounded-lg w-full h-auto" alt="">
+                                        </div>
+                                    </div>
                                 </div>
-                            </form>
-                        </div>
-                    </template>
-                </UModal>
+                            </div>
+                        </template>
+                    </UModal>
+                </div>
             </div>
         </div>
     </UApp>
