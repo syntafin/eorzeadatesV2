@@ -15,12 +15,19 @@
     "@nuxt/image": "^1.11.0",
     "@nuxt/ui": "^3.3.2",
     "eslint": "^9.34.0",
-    "nuxt": "^4.0.3",
+    "nuxt": "^4.6.2",
     "typescript": "^5.9.2",
     "vue": "^3.5.20",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.65"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "sharp@0.32.6": true,
+    "vue-demi@0.14.10": true,
+    "esbuild@0.28.2": true,
+    "unrs-resolver@1.12.2": true
   }
 }
